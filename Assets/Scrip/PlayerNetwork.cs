@@ -121,7 +121,7 @@ public class PlayerNetwork : NetworkBehaviour
         GameObject canvas = gameObject.transform.GetChild(2).gameObject;
         canvas.transform.GetChild(3).gameObject.SetActive(false);
         hasBoost = false;
-        Invoke(nameof(boostRecharge), 10f);
+        Invoke(nameof(boostRecharge), 4f);
     }
 
     bool isGrounded(){

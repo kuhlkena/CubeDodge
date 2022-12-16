@@ -14,8 +14,6 @@ public class GameManager : NetworkBehaviour
     private float startTime;
     private float enemyDelay;
     NetworkObject player;
-    NetworkObject otherPlayer;
-    bool hasP2;
     bool finished = false;
     
     void Start()
@@ -34,13 +32,6 @@ public class GameManager : NetworkBehaviour
         clearUI();
 
         if(IsServer){
-            try{
-                otherPlayer = NetworkManager.Singleton.ConnectedClients[1].PlayerObject;
-                hasP2 = true;
-            }
-            catch{
-                hasP2 = false;
-            }
             playerRig.velocity = new Vector3(0,0,0);
             player.transform.position = Player1Spawn.transform.position;
         }
@@ -60,20 +51,13 @@ public class GameManager : NetworkBehaviour
 
     void FixedUpdate()
     {
-        if(!IsServer){return;}
         if(player.transform.position.y < -10 && !finished){
             finished = true;
-            winUIClientRpc(2);
-            Invoke(nameof(nextLevelServerRpc), 1);
+            nextLevelServerRpc();
+    
         }
-        if(hasP2){
-            if(otherPlayer.transform.position.y < -10 && !finished){
-                finished = true;
-                winUIClientRpc(1);
-                Invoke(nameof(nextLevelServerRpc), 1);
-            }
-        }
-
+        
+        if(!IsServer){return;}
         if(Time.fixedTime - timeStamp > enemyDelay){
             timeStamp = Time.fixedTime;
             int random = Random.Range(0, 99);
@@ -87,7 +71,6 @@ public class GameManager : NetworkBehaviour
         if (enemyDelay > .2f){
             enemyDelay -= .001f;
         }
-        
     }
 
     [ClientRpc]
